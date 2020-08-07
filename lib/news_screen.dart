@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:prime_news/bloc/event.dart';
 import 'package:prime_news/bloc/news_bloc.dart';
 import 'bloc/state.dart';
@@ -8,8 +9,8 @@ import 'options.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NewsScreen extends StatefulWidget {
-  final newsData,newsTitle;
-  NewsScreen({this.newsData,this.newsTitle});
+  final newsData, newsTitle;
+  NewsScreen({this.newsData, this.newsTitle});
   @override
   _NewsScreenState createState() => _NewsScreenState();
 }
@@ -18,34 +19,52 @@ class _NewsScreenState extends State<NewsScreen> {
   NewsBloc newsBloc;
   var newsData;
   var newsTitle;
+  bool isLoading;
+  List<String> title = ["sports", "politics", "science"];
+
   @override
   void initState() {
     newsData = widget.newsData;
     newsTitle = widget.newsTitle;
+    isLoading = false;
     super.initState();
   }
 
-  void launchUrl(String newsUrl) async{
-    String url =  newsUrl;
+  void launchUrl(String newsUrl) async {
+    String url = newsUrl;
     if (await canLaunch(url)) {
-    await launch(url);
+      await launch(url);
     } else {
-    throw 'Could not launch $url';
+      throw 'Could not launch $url';
     }
   }
 
   @override
   Widget build(BuildContext context) {
     newsBloc = BlocProvider.of(context);
+    List<Function> event = [
+      () {
+        newsBloc.add(ProgressIndicatorEvent());
+        newsBloc.add(SportsNewsEvent());
+      },
+      () {
+        newsBloc.add(ProgressIndicatorEvent());
+        newsBloc.add(PoliticsEvent());
+      },
+      () {
+        newsBloc.add(ProgressIndicatorEvent());
+        newsBloc.add(ScienceEvent());
+      }
+    ];
     return Scaffold(
       appBar: AppBar(
         actions: <Widget>[Icon(Icons.account_circle)],
         leading: IconButton(
-          icon:Icon(Icons.arrow_back,
-            color: Colors.black,),
-          onPressed: (){
-            Navigator.pop(context);
-          },
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
+          onPressed: () {},
         ),
         elevation: 0.0,
         backgroundColor: Colors.white,
@@ -54,28 +73,37 @@ class _NewsScreenState extends State<NewsScreen> {
       ),
       body: BlocBuilder<NewsBloc, NewsState>(
         builder: (context, NewsState state) {
-          if(state is SportsNewsState){
+          if (state is SportsNewsState) {
             newsData = state.sportsNews;
             newsTitle = state.newsTitle;
-          }else if(state is PoliticsState){
+            isLoading = false;
+          } else if (state is PoliticsState) {
             newsData = state.politicsData;
             newsTitle = state.newsTitle;
-          }else if(state is ScienceState){
+            isLoading = false;
+          } else if (state is ScienceState) {
             newsData = state.scienceData;
             newsTitle = state.newsTitle;
-          }else if(state is TrendingState){
+            isLoading = false;
+          } else if (state is TrendingState) {
             newsData = state.trendingNews;
             newsTitle = state.newsTitle;
+            isLoading = false;
+          } else if (state is ProgressIndicatorState) {
+            isLoading = true;
           }
           return RefreshIndicator(
-            onRefresh: () async{
+            onRefresh: () async {
               newsBloc.add(TrendingNewsEvent());
               await Future.delayed(Duration(seconds: 3));
             },
             color: Color(0xffade498),
             child: Column(
               children: <Widget>[
-                Options(),
+                Options(
+                  title: title,
+                  addEvent: event,
+                ),
                 SizedBox(
                   height: 20.0,
                 ),
@@ -83,12 +111,12 @@ class _NewsScreenState extends State<NewsScreen> {
                   padding: EdgeInsets.only(left: 10.0),
                   child: Row(
                     children: [
-                      Text(newsTitle,
-                      style: screenStyle,
+                      Text(
+                        newsTitle,
+                        style: screenStyle.copyWith(
+                            fontFamily: "Robot", fontWeight: FontWeight.bold),
                       ),
-                      Icon(
-                        Icons.trending_up
-                      )
+                      Icon(Icons.trending_up)
                     ],
                   ),
                 ),
@@ -105,34 +133,50 @@ class _NewsScreenState extends State<NewsScreen> {
                           topLeft: Radius.circular(25.0),
                           topRight: Radius.circular(25)),
                     ),
-                    child:Padding(
-                        padding: EdgeInsets.only(top:12),
-                        child: ListView.builder(itemCount: newsData["response"]["results"].length,itemBuilder: (context, index){
-                          return Card(
-                            child: ExpansionTile(
-                              title: Text(newsData["response"]["results"][index]["webTitle"],
-                              style: screenStyle
-                              ) ,
-                           children: <Widget>[
-                             Row(
-                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                               children: <Widget>[
-                                 Text("comments",
-                                 style: screenStyle,
-                                 ),
-                                 IconButton(
-                                   icon: Icon(Icons.launch),
-                                   onPressed: (){
-                                     launchUrl(newsData["response"]["results"][index]["webUrl"]);
-                                   },
-                                 )
-                               ],
-                             )
-                           ],
-                            ),
-                          );
-                        }),
-                      ),
+                    child: isLoading
+                        ? Center(child: SpinKitFadingCircle(
+                      color: Colors.black,
+                    ))
+                        : Padding(
+                            padding: EdgeInsets.only(top: 12),
+                            child: ListView.builder(
+                                itemCount:
+                                    newsData["response"]["results"].length,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                    child: ExpansionTile(
+                                      title: Text(
+                                          newsData["response"]["results"][index]
+                                              ["webTitle"],
+                                          style: screenStyle.copyWith(
+                                              fontFamily: "Robot",
+                                              fontWeight: FontWeight.bold)),
+                                      children: <Widget>[
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: <Widget>[
+                                            Text(
+                                              "comments",
+                                              style: screenStyle.copyWith(
+                                                  fontFamily: "Robot",
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            IconButton(
+                                              icon: Icon(Icons.launch),
+                                              onPressed: () {
+                                                launchUrl(newsData["response"]
+                                                        ["results"][index]
+                                                    ["webUrl"]);
+                                              },
+                                            )
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  );
+                                }),
+                          ),
                   ),
                 )
               ],

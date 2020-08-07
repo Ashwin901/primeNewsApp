@@ -2,10 +2,9 @@ class NewsEvent{}
 
 class GetInitialNewsEvent extends NewsEvent{}
 
-class SportsNewsEvent extends NewsEvent{
-  final sportsUrl;
-  SportsNewsEvent({this.sportsUrl});
-}
+class ProgressIndicatorEvent extends NewsEvent{}
+
+class SportsNewsEvent extends NewsEvent{}
 
 class TrendingNewsEvent extends NewsEvent{}
 

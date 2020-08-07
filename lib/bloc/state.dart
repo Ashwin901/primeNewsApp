@@ -24,3 +24,5 @@ class TrendingState extends NewsState{
   final trendingNews, newsTitle;
   TrendingState({this.trendingNews, this.newsTitle});
 }
+
+class ProgressIndicatorState extends NewsState{}
