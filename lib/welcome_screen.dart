@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:prime_news/constants.dart';
-import 'package:prime_news/getNews.dart';
-import 'package:prime_news/news_screen.dart';
+import 'file:///C:/Users/Ashwin%20P/AndroidStudioProjects/prime_news/lib/components/constants.dart';
+import 'file:///C:/Users/Ashwin%20P/AndroidStudioProjects/prime_news/lib/data/getNews.dart';
+import 'news_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   @override

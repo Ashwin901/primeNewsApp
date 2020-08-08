@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:prime_news/bloc/event.dart';
 import 'package:prime_news/bloc/news_bloc.dart';
+import 'package:prime_news/theme/themeOptions.dart';
 import 'bloc/state.dart';
-import 'constants.dart';
-import 'options.dart';
+import 'components/constants.dart';
+import 'components/options.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NewsScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _NewsScreenState extends State<NewsScreen> {
   var newsData;
   var newsTitle;
   bool isLoading;
+  bool switchValue;
   List<String> title = ["sports", "politics", "science"];
 
   @override
@@ -27,6 +29,7 @@ class _NewsScreenState extends State<NewsScreen> {
     newsData = widget.newsData;
     newsTitle = widget.newsTitle;
     isLoading = false;
+    switchValue = false;
     super.initState();
   }
 
@@ -58,16 +61,21 @@ class _NewsScreenState extends State<NewsScreen> {
     ];
     return Scaffold(
       appBar: AppBar(
-        actions: <Widget>[Icon(Icons.account_circle)],
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-          onPressed: () {},
-        ),
+        actions: <Widget>[Switch(
+          value: switchValue,
+          onChanged: (value){
+            switchValue = value;
+            var theme;
+            if(Theme.of(context).brightness == Brightness.light){
+              theme = lightTheme;
+            }else{
+              theme = darkTheme;
+            }
+            newsBloc.add(ChangeThemeEvent(theme:theme));
+          },
+        )],
         elevation: 0.0,
-        backgroundColor: Colors.white,
+//        backgroundColor: Colors.white,
         centerTitle: true,
         title: Text("prime news", style: screenStyle),
       ),
@@ -113,8 +121,7 @@ class _NewsScreenState extends State<NewsScreen> {
                     children: [
                       Text(
                         newsTitle,
-                        style: screenStyle.copyWith(
-                            fontFamily: "Robot", fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.bodyText2,
                       ),
                       Icon(Icons.trending_up)
                     ],
@@ -125,7 +132,7 @@ class _NewsScreenState extends State<NewsScreen> {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(colors: [
-                        Colors.white,
+                        Colors.grey,
                         Color(0xff96deda),
                       ]),
                       color: Color(0xffade498),
@@ -134,9 +141,10 @@ class _NewsScreenState extends State<NewsScreen> {
                           topRight: Radius.circular(25)),
                     ),
                     child: isLoading
-                        ? Center(child: SpinKitFadingCircle(
-                      color: Colors.black,
-                    ))
+                        ? Center(
+                            child: SpinKitFadingCircle(
+                            color: Colors.black,
+                          ))
                         : Padding(
                             padding: EdgeInsets.only(top: 12),
                             child: ListView.builder(
@@ -148,9 +156,9 @@ class _NewsScreenState extends State<NewsScreen> {
                                       title: Text(
                                           newsData["response"]["results"][index]
                                               ["webTitle"],
-                                          style: screenStyle.copyWith(
-                                              fontFamily: "Robot",
-                                              fontWeight: FontWeight.bold)),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText2),
                                       children: <Widget>[
                                         Row(
                                           mainAxisAlignment:

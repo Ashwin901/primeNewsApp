@@ -26,3 +26,10 @@ class TrendingState extends NewsState{
 }
 
 class ProgressIndicatorState extends NewsState{}
+
+class ChangeThemeState extends NewsState{
+  final theme;
+  ChangeThemeState({this.theme});
+}
+
+

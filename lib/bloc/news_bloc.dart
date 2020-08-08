@@ -1,7 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:prime_news/bloc/event.dart';
 import 'package:prime_news/bloc/state.dart';
-import 'package:prime_news/getNews.dart';
+import 'package:prime_news/data/getNews.dart';
+import 'package:prime_news/theme/themeOptions.dart';
 
 class NewsBloc extends Bloc<NewsEvent,NewsState>{
   NewsBloc(NewsState initialState) : super(initialState);
@@ -26,6 +27,15 @@ class NewsBloc extends Bloc<NewsEvent,NewsState>{
      yield TrendingState(newsTitle: "Trending", trendingNews: trendingData);
    }else if(event is ProgressIndicatorEvent){
      yield ProgressIndicatorState();
+   }
+   else if(event is ChangeThemeEvent){
+     var theme;
+     if(event.theme == lightTheme){
+       theme = darkTheme;
+     }else{
+       theme = lightTheme;
+     }
+     yield ChangeThemeState(theme: theme);
    }
   }
 
