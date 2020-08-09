@@ -61,7 +61,9 @@ class _NewsScreenState extends State<NewsScreen> {
     ];
     return Scaffold(
       appBar: AppBar(
+        leading: Container(),
         actions: <Widget>[Switch(
+          activeColor: Colors.black87,
           value: switchValue,
           onChanged: (value){
             switchValue = value;
@@ -96,7 +98,6 @@ class _NewsScreenState extends State<NewsScreen> {
           } else if (state is TrendingState) {
             newsData = state.trendingNews;
             newsTitle = state.newsTitle;
-            isLoading = false;
           } else if (state is ProgressIndicatorState) {
             isLoading = true;
           }

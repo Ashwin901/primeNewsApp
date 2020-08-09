@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:prime_news/bloc/state.dart';
 import 'constants.dart';
-
+import 'package:prime_news/bloc/news_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 class Options extends StatefulWidget {
 final title;
 final  addEvent;
@@ -10,7 +12,7 @@ Options({this.title,this.addEvent});
 }
 
 class _OptionsState extends State<Options> {
-
+NewsBloc newsBloc ;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -60,6 +62,7 @@ class _OptionsState extends State<Options> {
 @override
   void dispose() {
     // TODO: implement dispose
+  newsBloc.close();
   super.dispose();
   }
 }

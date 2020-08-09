@@ -6,6 +6,7 @@ final darkTheme = ThemeData(
     appBarTheme: AppBarTheme(
         color: Colors.grey
     ),
+  accentColor: Colors.black,
   textTheme: TextTheme(
     bodyText2: screenStyle.copyWith(
       fontFamily: "Robot",
